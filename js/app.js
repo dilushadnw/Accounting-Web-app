@@ -220,7 +220,14 @@ function displayRecentTransactions() {
         return;
     }
 
-    recentList.innerHTML = recent.map(t => createTransactionElement(t)).join('');
+    // Clear existing content
+    recentList.innerHTML = '';
+    
+    // Append each transaction element
+    recent.forEach(t => {
+        const element = createTransactionElement(t, false);
+        recentList.appendChild(element);
+    });
 }
 
 // Display All Transactions
@@ -246,29 +253,57 @@ function displayTransactions() {
         return;
     }
 
-    list.innerHTML = filtered.map(t => createTransactionElement(t, true)).join('');
+    // Clear existing content
+    list.innerHTML = '';
+    
+    // Append each transaction element
+    filtered.forEach(t => {
+        const element = createTransactionElement(t, true);
+        list.appendChild(element);
+    });
 }
 
 // Create Transaction Element
 function createTransactionElement(transaction, showDelete = false) {
     const sign = transaction.type === 'income' ? '+' : '-';
-    const deleteBtn = showDelete ? 
-        `<div class="transaction-actions">
-            <button class="btn-delete" onclick="deleteTransaction('${transaction.id}')">Delete</button>
-        </div>` : '';
-
-    return `
-        <div class="transaction-item ${transaction.type}">
-            <div class="transaction-details">
-                <h4>${transaction.description}</h4>
-                <p>${transaction.category} • ${transaction.date}</p>
-            </div>
-            <div class="transaction-amount ${transaction.type}">
-                ${sign}$${transaction.amount.toFixed(2)}
-            </div>
-            ${deleteBtn}
-        </div>
-    `;
+    
+    // Create element safely to prevent XSS
+    const div = document.createElement('div');
+    div.className = `transaction-item ${transaction.type}`;
+    
+    const detailsDiv = document.createElement('div');
+    detailsDiv.className = 'transaction-details';
+    
+    const h4 = document.createElement('h4');
+    h4.textContent = transaction.description;
+    detailsDiv.appendChild(h4);
+    
+    const p = document.createElement('p');
+    p.textContent = `${transaction.category} • ${transaction.date}`;
+    detailsDiv.appendChild(p);
+    
+    const amountDiv = document.createElement('div');
+    amountDiv.className = `transaction-amount ${transaction.type}`;
+    amountDiv.textContent = `${sign}$${transaction.amount.toFixed(2)}`;
+    
+    div.appendChild(detailsDiv);
+    div.appendChild(amountDiv);
+    
+    if (showDelete) {
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'transaction-actions';
+        
+        const deleteBtn = document.createElement('button');
+        deleteBtn.className = 'btn-delete';
+        deleteBtn.textContent = 'Delete';
+        deleteBtn.addEventListener('click', () => deleteTransaction(transaction.id));
+        
+        actionsDiv.appendChild(deleteBtn);
+        div.appendChild(actionsDiv);
+    }
+    
+    // Return the DOM element directly to preserve event listeners
+    return div;
 }
 
 // Initialize Filters
@@ -304,12 +339,24 @@ function updateCategoryReport() {
         return;
     }
 
-    categoryReport.innerHTML = Object.entries(categoryTotals).map(([category, totals]) => `
-        <div class="report-item">
-            <span>${category.charAt(0).toUpperCase() + category.slice(1)}</span>
-            <span>Income: $${totals.income.toFixed(2)} | Expenses: $${totals.expense.toFixed(2)}</span>
-        </div>
-    `).join('');
+    // Clear existing content
+    categoryReport.innerHTML = '';
+    
+    // Create report items safely
+    Object.entries(categoryTotals).forEach(([category, totals]) => {
+        const reportItem = document.createElement('div');
+        reportItem.className = 'report-item';
+        
+        const categorySpan = document.createElement('span');
+        categorySpan.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+        
+        const totalsSpan = document.createElement('span');
+        totalsSpan.textContent = `Income: $${totals.income.toFixed(2)} | Expenses: $${totals.expense.toFixed(2)}`;
+        
+        reportItem.appendChild(categorySpan);
+        reportItem.appendChild(totalsSpan);
+        categoryReport.appendChild(reportItem);
+    });
 }
 
 // Monthly Report
@@ -336,15 +383,25 @@ function updateMonthlyReport() {
 
     const sortedMonths = Object.entries(monthlyTotals).sort((a, b) => b[0].localeCompare(a[0]));
 
-    monthlyReport.innerHTML = sortedMonths.map(([month, totals]) => {
+    // Clear existing content
+    monthlyReport.innerHTML = '';
+    
+    // Create report items safely
+    sortedMonths.forEach(([month, totals]) => {
         const balance = totals.income - totals.expense;
-        return `
-            <div class="report-item">
-                <span>${month}</span>
-                <span style="color: ${balance >= 0 ? '#4caf50' : '#f44336'}">
-                    Net: $${balance.toFixed(2)} (Income: $${totals.income.toFixed(2)} | Expenses: $${totals.expense.toFixed(2)})
-                </span>
-            </div>
-        `;
-    }).join('');
+        
+        const reportItem = document.createElement('div');
+        reportItem.className = 'report-item';
+        
+        const monthSpan = document.createElement('span');
+        monthSpan.textContent = month;
+        
+        const summarySpan = document.createElement('span');
+        summarySpan.style.color = balance >= 0 ? '#4caf50' : '#f44336';
+        summarySpan.textContent = `Net: $${balance.toFixed(2)} (Income: $${totals.income.toFixed(2)} | Expenses: $${totals.expense.toFixed(2)})`;
+        
+        reportItem.appendChild(monthSpan);
+        reportItem.appendChild(summarySpan);
+        monthlyReport.appendChild(reportItem);
+    });
 }

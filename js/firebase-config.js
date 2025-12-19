@@ -21,15 +21,36 @@ const database = firebase.database();
 
 // Authentication State Observer
 auth.onAuthStateChanged((user) => {
+    const userInfo = document.getElementById('userInfo');
+    
     if (user) {
         console.log('User signed in:', user.email);
         document.getElementById('loginBtn').style.display = 'none';
         document.getElementById('logoutBtn').style.display = 'block';
-        document.getElementById('userInfo').innerHTML += `<span style="margin-right: 10px; color: white;">${user.email}</span>`;
+        
+        // Remove any existing user email span to prevent duplicates
+        const existingSpan = userInfo.querySelector('.user-email');
+        if (existingSpan) {
+            existingSpan.remove();
+        }
+        
+        // Safely add user email using textContent to prevent XSS
+        const userSpan = document.createElement('span');
+        userSpan.className = 'user-email';
+        userSpan.style.marginRight = '10px';
+        userSpan.style.color = 'white';
+        userSpan.textContent = user.email;
+        userInfo.appendChild(userSpan);
     } else {
         console.log('No user signed in');
         document.getElementById('loginBtn').style.display = 'block';
         document.getElementById('logoutBtn').style.display = 'none';
+        
+        // Remove user email span if it exists
+        const existingSpan = userInfo.querySelector('.user-email');
+        if (existingSpan) {
+            existingSpan.remove();
+        }
     }
 });
 
@@ -39,6 +60,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoutBtn = document.getElementById('logoutBtn');
 
     loginBtn.addEventListener('click', () => {
+        // Note: Using prompt() for demo purposes only
+        // In production, replace with a proper login form/modal
         const email = prompt('Enter email:');
         const password = prompt('Enter password:');
         
