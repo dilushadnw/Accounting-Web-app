@@ -152,7 +152,7 @@ function generateInvoiceNumber() {
  * @returns {string} Line item ID
  */
 function generateLineItemId() {
-    return 'item-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    return 'item-' + Date.now() + '-' + Math.random().toString(36).slice(2, 11);
 }
 
 /**

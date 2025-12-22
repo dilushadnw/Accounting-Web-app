@@ -99,12 +99,25 @@
     <script src="js/utils/currency-utils.js"></script>
     <script src="js/utils/date-utils.js"></script>
     <script>
+        let isAuthenticated = false;
+        let isLoading = true;
+        
         auth.onAuthStateChanged((user) => {
-            if (!user) window.location.href = 'login.html';
-            else loadInvoice();
+            isLoading = false;
+            if (!user) {
+                window.location.href = 'login.html';
+            } else {
+                isAuthenticated = true;
+                loadInvoice();
+            }
         });
         
         function loadInvoice() {
+            if (!isAuthenticated) {
+                console.error('User not authenticated');
+                return;
+            }
+            
             const params = new URLSearchParams(window.location.search);
             const id = params.get('id');
             
@@ -125,30 +138,42 @@
                 notes: 'Thank you for your business!'
             };
             
-            document.getElementById('invoiceNumber').textContent = invoice.invoiceNumber;
-            document.getElementById('customerName').textContent = invoice.customerName;
-            document.getElementById('issueDate').textContent = formatDate(invoice.issueDate);
-            document.getElementById('dueDate').textContent = formatDate(invoice.dueDate);
-            document.getElementById('status').innerHTML = '<span class="badge badge-info">' + invoice.status + '</span>';
-            
-            const tbody = document.getElementById('lineItemsBody');
-            tbody.innerHTML = invoice.lineItems.map(item => `
-                <tr>
-                    <td>${item.description}</td>
-                    <td class="text-right">${item.quantity}</td>
-                    <td class="text-right">${formatCurrency(item.rate)}</td>
-                    <td class="text-right">${formatCurrency(item.amount)}</td>
-                </tr>
-            `).join('');
-            
-            document.getElementById('subtotal').textContent = formatCurrency(invoice.subtotal);
-            document.getElementById('tax').textContent = formatCurrency(invoice.taxAmount);
-            document.getElementById('total').textContent = formatCurrency(invoice.total);
-            
-            if (invoice.notes) {
-                document.getElementById('notesSection').style.display = 'block';
-                document.getElementById('notes').textContent = invoice.notes;
+            try {
+                document.getElementById('invoiceNumber').textContent = invoice.invoiceNumber;
+                document.getElementById('customerName').textContent = invoice.customerName;
+                document.getElementById('issueDate').textContent = formatDate(invoice.issueDate);
+                document.getElementById('dueDate').textContent = formatDate(invoice.dueDate);
+                document.getElementById('status').innerHTML = '<span class="badge badge-info">' + invoice.status + '</span>';
+                
+                const tbody = document.getElementById('lineItemsBody');
+                tbody.innerHTML = invoice.lineItems.map(item => `
+                    <tr>
+                        <td>${escapeHtml(item.description)}</td>
+                        <td class="text-right">${item.quantity}</td>
+                        <td class="text-right">${formatCurrency(item.rate)}</td>
+                        <td class="text-right">${formatCurrency(item.amount)}</td>
+                    </tr>
+                `).join('');
+                
+                document.getElementById('subtotal').textContent = formatCurrency(invoice.subtotal);
+                document.getElementById('tax').textContent = formatCurrency(invoice.taxAmount);
+                document.getElementById('total').textContent = formatCurrency(invoice.total);
+                
+                if (invoice.notes) {
+                    document.getElementById('notesSection').style.display = 'block';
+                    document.getElementById('notes').textContent = invoice.notes;
+                }
+            } catch (error) {
+                console.error('Error loading invoice:', error);
+                alert('Error loading invoice. Please try again.');
             }
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
     </script>
 </body>
