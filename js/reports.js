@@ -103,13 +103,90 @@ function calculateTotals() {
 }
 
 function exportToPDF() {
-    console.warn('PDF export functionality requires jsPDF library.');
-    console.info('To enable PDF export, add jsPDF library: <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>');
-    // In production, you would use jsPDF:
-    // const doc = new jsPDF();
-    // doc.text('Profit & Loss Report', 10, 10);
-    // ... add report content
-    // doc.save('profit-loss-report.pdf');
+    // Check if jsPDF is available
+    if (typeof jspdf === 'undefined') {
+        console.warn('jsPDF library not loaded. PDF export is unavailable.');
+        alert('PDF export requires jsPDF library to be loaded.');
+        return;
+    }
+    
+    const { jsPDF } = jspdf;
+    const doc = new jsPDF();
+    
+    // Add title
+    doc.setFontSize(20);
+    doc.text('Profit & Loss Report', 14, 22);
+    
+    // Add period
+    const period = document.getElementById('reportPeriod').textContent;
+    doc.setFontSize(12);
+    doc.text(`Period: ${period}`, 14, 32);
+    
+    // Add date generated
+    doc.setFontSize(10);
+    doc.text(`Generated: ${new Date().toLocaleDateString()}`, 14, 40);
+    
+    // Income section
+    doc.setFontSize(14);
+    doc.setFont(undefined, 'bold');
+    doc.text('Income', 14, 52);
+    
+    doc.setFontSize(11);
+    doc.setFont(undefined, 'normal');
+    
+    const salesRevenue = document.getElementById('salesRevenue').textContent;
+    const otherIncome = document.getElementById('otherIncome').textContent;
+    const totalIncome = document.getElementById('totalIncome').textContent;
+    
+    doc.text(`Sales Revenue: ${salesRevenue}`, 20, 60);
+    doc.text(`Other Income: ${otherIncome}`, 20, 68);
+    doc.setFont(undefined, 'bold');
+    doc.text(`Total Income: ${totalIncome}`, 20, 76);
+    
+    // Expense section
+    doc.setFont(undefined, 'bold');
+    doc.setFontSize(14);
+    doc.text('Expenses', 14, 90);
+    
+    doc.setFontSize(11);
+    doc.setFont(undefined, 'normal');
+    
+    const officeExpenses = document.getElementById('officeExpenses').textContent;
+    const travelExpenses = document.getElementById('travelExpenses').textContent;
+    const mealsExpenses = document.getElementById('mealsExpenses').textContent;
+    const utilitiesExpenses = document.getElementById('utilitiesExpenses').textContent;
+    const suppliesExpenses = document.getElementById('suppliesExpenses').textContent;
+    const otherExpenses = document.getElementById('otherExpenses').textContent;
+    const totalExpenses = document.getElementById('totalExpenses').textContent;
+    
+    doc.text(`Office Expenses: ${officeExpenses}`, 20, 98);
+    doc.text(`Travel Expenses: ${travelExpenses}`, 20, 106);
+    doc.text(`Meals & Entertainment: ${mealsExpenses}`, 20, 114);
+    doc.text(`Utilities: ${utilitiesExpenses}`, 20, 122);
+    doc.text(`Supplies: ${suppliesExpenses}`, 20, 130);
+    doc.text(`Other Expenses: ${otherExpenses}`, 20, 138);
+    doc.setFont(undefined, 'bold');
+    doc.text(`Total Expenses: ${totalExpenses}`, 20, 146);
+    
+    // Net Profit/Loss
+    const netResult = document.getElementById('netResult');
+    const netLabel = netResult.querySelector('span:first-child').textContent;
+    const netAmount = document.getElementById('netAmount').textContent;
+    
+    doc.setFontSize(16);
+    doc.setFont(undefined, 'bold');
+    
+    // Set color based on profit/loss
+    if (netLabel === 'Net Profit') {
+        doc.setTextColor(5, 150, 105); // Green
+    } else {
+        doc.setTextColor(220, 38, 38); // Red
+    }
+    
+    doc.text(`${netLabel}: ${netAmount}`, 14, 162);
+    
+    // Save the PDF
+    doc.save(`profit-loss-report-${new Date().toISOString().split('T')[0]}.pdf`);
 }
 
 function exportToCSV() {
