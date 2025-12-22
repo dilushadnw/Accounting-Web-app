@@ -3,7 +3,7 @@
 // Get these from Firebase Console -> Project Settings -> Your Apps
 
 const firebaseConfig = {
-      apiKey: "AIzaSyDFEG1tTPNSRUH4Z_wcF29FwJMV9SORGaI",
+    apiKey: "AIzaSyDFEG1tTPNSRUH4Z_wcF29FwJMV9SORGaI",
   authDomain: "accounting-web-app-ff4bc.firebaseapp.com",
   projectId: "accounting-web-app-ff4bc",
   storageBucket: "accounting-web-app-ff4bc.appspot.com",
