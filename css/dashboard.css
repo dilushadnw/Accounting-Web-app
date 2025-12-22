@@ -1,0 +1,239 @@
+/**
+ * Dashboard Specific Styles
+ * Styles for dashboard cards and metrics
+ */
+
+/* Dashboard Cards Grid */
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+/* Card Styles */
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Card Icons */
+.card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.card-icon.revenue {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.card-icon.expenses {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.card-icon.profit {
+    background: #dbeafe;
+    color: #2563eb;
+}
+
+.card-icon.receivable {
+    background: #fef3c7;
+    color: #d97706;
+}
+
+.card-icon.payable {
+    background: #fce7f3;
+    color: #db2777;
+}
+
+.card-icon.bank {
+    background: #e0e7ff;
+    color: #4f46e5;
+}
+
+/* Card Content */
+.card-content {
+    flex: 1;
+}
+
+.card-content h3 {
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-amount {
+    color: #0f172a;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.card-change {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+
+.card-change.positive {
+    background: #d1fae5;
+    color: #059669;
+}
+
+.card-change.negative {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.card-info {
+    color: #64748b;
+    font-size: 13px;
+}
+
+/* Specific Card Styling */
+.card-revenue {
+    border-left: 4px solid #059669;
+}
+
+.card-expenses {
+    border-left: 4px solid #dc2626;
+}
+
+.card-profit {
+    border-left: 4px solid #2563eb;
+}
+
+.card-receivable {
+    border-left: 4px solid #d97706;
+}
+
+.card-payable {
+    border-left: 4px solid #db2777;
+}
+
+.card-bank {
+    border-left: 4px solid #4f46e5;
+}
+
+/* Recent Activity Section */
+.content-section {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design for Dashboard */
+@media (max-width: 1200px) {
+    .dashboard-cards {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-cards {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .card {
+        padding: 20px;
+    }
+    
+    .card-amount {
+        font-size: 24px;
+    }
+    
+    .card-icon {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        padding: 16px;
+    }
+    
+    .card-amount {
+        font-size: 20px;
+    }
+    
+    .card-content h3 {
+        font-size: 12px;
+    }
+}
+
+/* Loading State */
+.loading-card {
+    background: #f1f5f9;
+    border-radius: 12px;
+    padding: 24px;
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: #64748b;
+}
+
+.empty-state svg {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    color: #cbd5e1;
+}
+
+.empty-state h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #334155;
+}
+
+.empty-state p {
+    font-size: 14px;
+    margin-bottom: 16px;
+}

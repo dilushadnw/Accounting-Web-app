@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense by Category - Accounting Software</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/reports.css">
+</head>
+<body>
+    <nav class="top-navbar">
+        <div class="navbar-left">
+            <button class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></button>
+            <div class="logo"><h2>Accounting</h2></div>
+        </div>
+        <div class="navbar-right">
+            <div class="user-menu">
+                <button class="user-menu-btn" id="userMenuBtn">
+                    <div class="user-avatar"><span id="userInitials">U</span></div>
+                    <span class="user-name" id="userName">User</span>
+                </button>
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="#" class="dropdown-item" id="logoutBtn">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <aside class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item">Dashboard</a>
+            <a href="invoices.html" class="nav-item">Invoices</a>
+            <a href="expenses.html" class="nav-item">Expenses</a>
+            <a href="customers.html" class="nav-item">Customers</a>
+            <a href="reports.html" class="nav-item active">Reports</a>
+        </nav>
+    </aside>
+    
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Expense by Category</h1>
+            <div>
+                <a href="reports.html" class="btn-secondary">Back to Reports</a>
+            </div>
+        </div>
+        
+        <!-- Date Range Filter -->
+        <div class="report-filters">
+            <div class="filter-row">
+                <label for="dateRange">Date Range:</label>
+                <select id="dateRange">
+                    <option value="this_month">This Month</option>
+                    <option value="last_month">Last Month</option>
+                    <option value="this_year">This Year</option>
+                    <option value="custom">Custom Range</option>
+                </select>
+                
+                <div id="customDatesGroup" style="display: none;">
+                    <input type="date" id="startDate">
+                    <span>to</span>
+                    <input type="date" id="endDate">
+                </div>
+                
+                <button class="btn-primary" id="generateBtn">Generate Report</button>
+            </div>
+        </div>
+        
+        <!-- Chart Container -->
+        <div class="content-section">
+            <h2>Expense Distribution</h2>
+            <div style="max-width: 600px; margin: 30px auto;">
+                <canvas id="expensePieChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Category Breakdown Table -->
+        <div class="content-section">
+            <h2>Category Breakdown</h2>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Amount</th>
+                            <th>Percentage</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categoryTableBody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Export Actions -->
+        <div class="report-actions">
+            <button class="btn-secondary" onclick="window.print()">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: inline; vertical-align: middle; margin-right: 4px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                </svg>
+                Print
+            </button>
+            <button class="btn-secondary" id="exportCsvBtn">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: inline; vertical-align: middle; margin-right: 4px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Export to CSV
+            </button>
+        </div>
+    </main>
+    
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" integrity="sha512-SIMGYRUjwY8+gKg7nn9EItdD8LCADSDfJNutF9TPrvEo86sQmFMh6MyralfIyhADlajSxqc7G0gs7+MwWF/ogQ==" crossorigin="anonymous"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/utils/currency-utils.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script>
+        // Expense by Category Report Logic
+        let expenseChart = null;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            initExpenseCategoryReport();
+        });
+        
+        function initExpenseCategoryReport() {
+            const dateRangeSelect = document.getElementById('dateRange');
+            const customDatesGroup = document.getElementById('customDatesGroup');
+            
+            dateRangeSelect.addEventListener('change', () => {
+                customDatesGroup.style.display = dateRangeSelect.value === 'custom' ? 'block' : 'none';
+            });
+            
+            document.getElementById('generateBtn').addEventListener('click', generateExpenseReport);
+            document.getElementById('exportCsvBtn').addEventListener('click', exportToCSV);
+            
+            // Load initial report
+            generateExpenseReport();
+        }
+        
+        function generateExpenseReport() {
+            // Sample data - in production, fetch from Firebase
+            const expenseData = {
+                'Office': 12450,
+                'Travel': 8230,
+                'Meals': 5600,
+                'Utilities': 3200,
+                'Supplies': 2100,
+                'Other': 1650
+            };
+            
+            const total = Object.values(expenseData).reduce((sum, val) => sum + val, 0);
+            
+            // Update chart
+            updateExpenseChart(expenseData);
+            
+            // Update table
+            const tbody = document.getElementById('categoryTableBody');
+            tbody.innerHTML = '';
+            
+            const categories = Object.entries(expenseData).sort((a, b) => b[1] - a[1]);
+            
+            categories.forEach(([category, amount]) => {
+                const percentage = ((amount / total) * 100).toFixed(1);
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${category}</td>
+                    <td>${formatCurrency(amount)}</td>
+                    <td>${percentage}%</td>
+                    <td>${Math.floor(Math.random() * 20) + 5}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function updateExpenseChart(data) {
+            const ctx = document.getElementById('expensePieChart').getContext('2d');
+            
+            // Destroy existing chart
+            if (expenseChart) {
+                expenseChart.destroy();
+            }
+            
+            // Create new chart
+            expenseChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(data),
+                    datasets: [{
+                        data: Object.values(data),
+                        backgroundColor: [
+                            '#2563eb',
+                            '#7c3aed',
+                            '#db2777',
+                            '#dc2626',
+                            '#ea580c',
+                            '#ca8a04'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: {
+                                    size: 13
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.parsed || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((value / total) * 100).toFixed(1);
+                                    return `${label}: ${formatCurrency(value)} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function exportToCSV() {
+            const table = document.querySelector('.data-table');
+            let csv = [];
+            
+            // Headers
+            const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent);
+            csv.push(headers.join(','));
+            
+            // Rows
+            table.querySelectorAll('tbody tr').forEach(row => {
+                const rowData = Array.from(row.querySelectorAll('td')).map(td => {
+                    let text = td.textContent.trim();
+                    // Remove $ and commas for proper CSV format
+                    text = text.replace(/[$,]/g, '');
+                    return `"${text}"`;
+                });
+                csv.push(rowData.join(','));
+            });
+            
+            // Download
+            const csvContent = csv.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `expense-by-category-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

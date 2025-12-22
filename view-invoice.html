@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Invoice - Accounting Software</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/invoice.css">
+</head>
+<body>
+    <nav class="top-navbar">
+        <div class="navbar-left">
+            <button class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></button>
+            <div class="logo"><h2>Accounting</h2></div>
+        </div>
+        <div class="navbar-right">
+            <div class="user-menu">
+                <button class="user-menu-btn" id="userMenuBtn">
+                    <div class="user-avatar"><span id="userInitials">U</span></div>
+                    <span class="user-name" id="userName">User</span>
+                </button>
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="#" class="dropdown-item" id="logoutBtn">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <aside class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item">Dashboard</a>
+            <a href="invoices.html" class="nav-item active">Invoices</a>
+            <a href="expenses.html" class="nav-item">Expenses</a>
+            <a href="customers.html" class="nav-item">Customers</a>
+            <a href="reports.html" class="nav-item">Reports</a>
+        </nav>
+    </aside>
+    
+    <main class="main-content">
+        <div class="invoice-view" id="invoiceView">
+            <div class="invoice-view-header">
+                <div class="company-info">
+                    <h1>Accounting Software</h1>
+                    <p>Professional Invoice</p>
+                </div>
+                <div class="invoice-details">
+                    <h2>INVOICE</h2>
+                    <p><strong id="invoiceNumber">INV-001</strong></p>
+                </div>
+            </div>
+            
+            <div class="invoice-info-section">
+                <div class="info-block">
+                    <h3>Bill To</h3>
+                    <p><strong id="customerName">Customer Name</strong></p>
+                </div>
+                <div class="info-block">
+                    <h3>Invoice Details</h3>
+                    <p>Issue Date: <span id="issueDate">-</span></p>
+                    <p>Due Date: <span id="dueDate">-</span></p>
+                    <p>Status: <span id="status">-</span></p>
+                </div>
+            </div>
+            
+            <table class="invoice-items-table">
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th class="text-right">Quantity</th>
+                        <th class="text-right">Rate</th>
+                        <th class="text-right">Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="lineItemsBody"></tbody>
+            </table>
+            
+            <div class="invoice-totals">
+                <div class="total-row"><span>Subtotal:</span><span id="subtotal">$0.00</span></div>
+                <div class="total-row"><span>Tax:</span><span id="tax">$0.00</span></div>
+                <div class="total-row total-final"><strong>Total:</strong><strong id="total">$0.00</strong></div>
+            </div>
+            
+            <div class="invoice-notes" id="notesSection" style="display:none;">
+                <h3>Notes</h3>
+                <p id="notes"></p>
+            </div>
+            
+            <div class="invoice-actions">
+                <button class="btn-secondary" onclick="window.print()">Print</button>
+                <a href="invoices.html" class="btn-secondary">Back to Invoices</a>
+            </div>
+        </div>
+    </main>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/utils/currency-utils.js"></script>
+    <script src="js/utils/date-utils.js"></script>
+    <script>
+        let isAuthenticated = false;
+        let isLoading = true;
+        
+        auth.onAuthStateChanged((user) => {
+            isLoading = false;
+            if (!user) {
+                window.location.href = 'login.html';
+            } else {
+                isAuthenticated = true;
+                loadInvoice();
+            }
+        });
+        
+        function loadInvoice() {
+            if (!isAuthenticated) {
+                console.error('User not authenticated');
+                return;
+            }
+            
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id');
+            
+            // Sample data for demo
+            const invoice = {
+                invoiceNumber: id || 'INV-001',
+                customerName: 'Sample Customer',
+                issueDate: '2024-12-20',
+                dueDate: '2025-01-19',
+                status: 'draft',
+                lineItems: [
+                    { description: 'Service Fee', quantity: 1, rate: 1000, amount: 1000 },
+                    { description: 'Consulting', quantity: 5, rate: 200, amount: 1000 }
+                ],
+                subtotal: 2000,
+                taxAmount: 200,
+                total: 2200,
+                notes: 'Thank you for your business!'
+            };
+            
+            try {
+                document.getElementById('invoiceNumber').textContent = invoice.invoiceNumber;
+                document.getElementById('customerName').textContent = invoice.customerName;
+                document.getElementById('issueDate').textContent = formatDate(invoice.issueDate);
+                document.getElementById('dueDate').textContent = formatDate(invoice.dueDate);
+                document.getElementById('status').innerHTML = '<span class="badge badge-info">' + invoice.status + '</span>';
+                
+                const tbody = document.getElementById('lineItemsBody');
+                tbody.innerHTML = invoice.lineItems.map(item => `
+                    <tr>
+                        <td>${escapeHtml(item.description)}</td>
+                        <td class="text-right">${item.quantity}</td>
+                        <td class="text-right">${formatCurrency(item.rate)}</td>
+                        <td class="text-right">${formatCurrency(item.amount)}</td>
+                    </tr>
+                `).join('');
+                
+                document.getElementById('subtotal').textContent = formatCurrency(invoice.subtotal);
+                document.getElementById('tax').textContent = formatCurrency(invoice.taxAmount);
+                document.getElementById('total').textContent = formatCurrency(invoice.total);
+                
+                if (invoice.notes) {
+                    document.getElementById('notesSection').style.display = 'block';
+                    document.getElementById('notes').textContent = invoice.notes;
+                }
+            } catch (error) {
+                console.error('Error loading invoice:', error);
+                alert('Error loading invoice. Please try again.');
+            }
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>

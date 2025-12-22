@@ -18,6 +18,18 @@ firebase.initializeApp(firebaseConfig);
 // Get references to Firebase services
 const auth = firebase.auth();
 const database = firebase.database();
+const db = firebase.firestore ? firebase.firestore() : null;
+const storage = firebase.storage ? firebase.storage() : null;
+
+// Only initialize Firestore if it's available
+if (firebase.firestore && !db) {
+    console.warn('Firestore SDK loaded but initialization failed');
+}
+
+// Only initialize Storage if it's available
+if (firebase.storage && !storage) {
+    console.warn('Storage SDK loaded but initialization failed');
+}
 
 // Authentication State Observer
 auth.onAuthStateChanged((user) => {
