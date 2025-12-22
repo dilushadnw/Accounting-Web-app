@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customers - Accounting Software</title>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <nav class="top-navbar">
+        <div class="navbar-left">
+            <button class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></button>
+            <div class="logo"><h2>Accounting</h2></div>
+        </div>
+        <div class="navbar-right">
+            <div class="user-menu">
+                <button class="user-menu-btn" id="userMenuBtn">
+                    <div class="user-avatar"><span id="userInitials">U</span></div>
+                    <span class="user-name" id="userName">User</span>
+                </button>
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="#" class="dropdown-item" id="logoutBtn">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <aside class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item">Dashboard</a>
+            <a href="invoices.html" class="nav-item">Invoices</a>
+            <a href="expenses.html" class="nav-item">Expenses</a>
+            <a href="customers.html" class="nav-item active">Customers</a>
+            <a href="reports.html" class="nav-item">Reports</a>
+        </nav>
+    </aside>
+    
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1>Customers</h1>
+                <p class="page-subtitle">Manage your customer relationships</p>
+            </div>
+            <button class="btn-primary">Add Customer</button>
+        </div>
+        
+        <div class="content-section">
+            <h3>Customer Management Coming Soon</h3>
+            <p>This feature will allow you to manage customer information, track invoices, and view payment history.</p>
+        </div>
+    </main>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
