@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customers - Accounting Software</title>
     <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/customers.css">
 </head>
 <body>
     <nav class="top-navbar">
@@ -41,18 +42,58 @@
                 <h1>Customers</h1>
                 <p class="page-subtitle">Manage your customer relationships</p>
             </div>
-            <button class="btn-primary">Add Customer</button>
+            <a href="add-customer.html" class="btn-primary">Add Customer</a>
         </div>
         
+        <!-- Customer Stats -->
+        <div class="customer-stats">
+            <div class="stat-card">
+                <h3>Total Customers</h3>
+                <div class="value" id="totalCustomers">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Owed</h3>
+                <div class="value" id="totalOwed">$0.00</div>
+            </div>
+            <div class="stat-card">
+                <h3>Active This Month</h3>
+                <div class="value" id="activeCustomers">0</div>
+            </div>
+        </div>
+        
+        <!-- Filters -->
         <div class="content-section">
-            <h3>Customer Management Coming Soon</h3>
-            <p>This feature will allow you to manage customer information, track invoices, and view payment history.</p>
+            <div class="customer-filters">
+                <input type="text" id="searchFilter" placeholder="Search customers...">
+            </div>
+            
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Balance Owed</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customersTableBody">
+                        <tr>
+                            <td colspan="5" class="text-center">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
     
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="js/firebase-config.js"></script>
-    <script src="js/dashboard.js"></script>
+    <script src="js/utils/currency-utils.js"></script>
+    <script src="js/services/firestore-service.js"></script>
+    <script src="js/customers.js"></script>
 </body>
 </html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Details - Accounting Software</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/customers.css">
+</head>
+<body>
+    <nav class="top-navbar">
+        <div class="navbar-left">
+            <button class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></button>
+            <div class="logo"><h2>Accounting</h2></div>
+        </div>
+        <div class="navbar-right">
+            <div class="user-menu">
+                <button class="user-menu-btn" id="userMenuBtn">
+                    <div class="user-avatar"><span id="userInitials">U</span></div>
+                    <span class="user-name" id="userName">User</span>
+                </button>
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="#" class="dropdown-item" id="logoutBtn">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <aside class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item">Dashboard</a>
+            <a href="invoices.html" class="nav-item">Invoices</a>
+            <a href="expenses.html" class="nav-item">Expenses</a>
+            <a href="customers.html" class="nav-item active">Customers</a>
+            <a href="reports.html" class="nav-item">Reports</a>
+        </nav>
+    </aside>
+    
+    <main class="main-content">
+        <div class="page-header">
+            <h1 id="customerName">Customer Details</h1>
+            <div>
+                <a href="customers.html" class="btn-secondary">Back to Customers</a>
+            </div>
+        </div>
+        
+        <div class="customer-detail-header">
+            <div class="customer-info-grid">
+                <div class="info-item">
+                    <span class="info-label">Email</span>
+                    <span class="info-value" id="email">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Phone</span>
+                    <span class="info-value" id="phone">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Company</span>
+                    <span class="info-value" id="company">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Payment Terms</span>
+                    <span class="info-value" id="paymentTerms">-</span>
+                </div>
+            </div>
+            
+            <div class="balance-card">
+                <div class="balance-item">
+                    <h4>Total Invoiced</h4>
+                    <div class="balance-amount" id="totalInvoiced">$0.00</div>
+                </div>
+                <div class="balance-item">
+                    <h4>Total Paid</h4>
+                    <div class="balance-amount positive" id="totalPaid">$0.00</div>
+                </div>
+                <div class="balance-item">
+                    <h4>Balance Owed</h4>
+                    <div class="balance-amount negative" id="balanceOwed">$0.00</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="invoice-history">
+            <h3>Invoice History</h3>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Invoice #</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoicesBody">
+                        <tr>
+                            <td colspan="4" class="text-center">No invoices found</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/utils/currency-utils.js"></script>
+    <script src="js/utils/date-utils.js"></script>
+    <script src="js/customers.js"></script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const customerId = params.get('id');
+        
+        // Sample customer data
+        const customer = {
+            id: customerId,
+            displayName: 'Sample Customer',
+            email: 'customer@example.com',
+            phone: '(555) 123-4567',
+            companyName: 'Sample Company Inc.',
+            paymentTerms: 'Net 30',
+            balanceOwed: 2500
+        };
+        
+        document.getElementById('customerName').textContent = customer.displayName;
+        document.getElementById('email').textContent = customer.email;
+        document.getElementById('phone').textContent = customer.phone;
+        document.getElementById('company').textContent = customer.companyName || '-';
+        document.getElementById('paymentTerms').textContent = customer.paymentTerms;
+        document.getElementById('totalInvoiced').textContent = formatCurrency(5000);
+        document.getElementById('totalPaid').textContent = formatCurrency(2500);
+        document.getElementById('balanceOwed').textContent = formatCurrency(customer.balanceOwed);
+    </script>
+</body>
+</html>

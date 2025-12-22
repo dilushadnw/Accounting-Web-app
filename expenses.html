@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Expenses - Accounting Software</title>
     <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/expenses.css">
 </head>
 <body>
     <nav class="top-navbar">
@@ -41,18 +42,81 @@
                 <h1>Expenses</h1>
                 <p class="page-subtitle">Track and manage your business expenses</p>
             </div>
-            <button class="btn-primary">Add Expense</button>
+            <a href="add-expense.html" class="btn-primary">Add Expense</a>
         </div>
         
+        <!-- Expense Summary -->
+        <div class="expense-summary">
+            <div class="summary-card">
+                <h3>Total Expenses</h3>
+                <div class="amount" id="totalExpenses">$0.00</div>
+            </div>
+            <div class="summary-card">
+                <h3>This Month</h3>
+                <div class="amount" id="monthExpenses">$0.00</div>
+            </div>
+            <div class="summary-card">
+                <h3>Total Count</h3>
+                <div class="amount" id="expenseCount">0</div>
+            </div>
+        </div>
+        
+        <!-- Filters -->
         <div class="content-section">
-            <h3>Expense Tracking Coming Soon</h3>
-            <p>This feature will allow you to track expenses, upload receipts, and categorize spending.</p>
+            <div class="expense-filters">
+                <input type="text" id="searchFilter" placeholder="Search expenses...">
+                <select id="categoryFilter">
+                    <option value="">All Categories</option>
+                    <option value="Office">Office</option>
+                    <option value="Travel">Travel</option>
+                    <option value="Meals">Meals</option>
+                    <option value="Utilities">Utilities</option>
+                    <option value="Supplies">Supplies</option>
+                    <option value="Other">Other</option>
+                </select>
+                <input type="date" id="startDate">
+                <input type="date" id="endDate">
+                <button class="btn-secondary" id="exportBtn">Export to CSV</button>
+            </div>
+            
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Vendor</th>
+                            <th>Category</th>
+                            <th>Amount</th>
+                            <th>Receipt</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expensesTableBody">
+                        <tr>
+                            <td colspan="6" class="text-center">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
     
+    <!-- Receipt Modal -->
+    <div class="modal" id="receiptModal">
+        <div class="modal-content">
+            <button class="modal-close" id="closeModal">&times;</button>
+            <img id="modalImage" class="modal-image" src="" alt="Receipt">
+        </div>
+    </div>
+    
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
     <script src="js/firebase-config.js"></script>
-    <script src="js/dashboard.js"></script>
+    <script src="js/utils/currency-utils.js"></script>
+    <script src="js/utils/date-utils.js"></script>
+    <script src="js/services/firestore-service.js"></script>
+    <script src="js/expenses.js"></script>
 </body>
 </html>

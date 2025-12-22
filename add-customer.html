@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Customer - Accounting Software</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/customers.css">
+</head>
+<body>
+    <nav class="top-navbar">
+        <div class="navbar-left">
+            <button class="menu-toggle" id="menuToggle"><span></span><span></span><span></span></button>
+            <div class="logo"><h2>Accounting</h2></div>
+        </div>
+        <div class="navbar-right">
+            <div class="user-menu">
+                <button class="user-menu-btn" id="userMenuBtn">
+                    <div class="user-avatar"><span id="userInitials">U</span></div>
+                    <span class="user-name" id="userName">User</span>
+                </button>
+                <div class="user-dropdown" id="userDropdown">
+                    <a href="#" class="dropdown-item" id="logoutBtn">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <aside class="sidebar" id="sidebar">
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-item">Dashboard</a>
+            <a href="invoices.html" class="nav-item">Invoices</a>
+            <a href="expenses.html" class="nav-item">Expenses</a>
+            <a href="customers.html" class="nav-item active">Customers</a>
+            <a href="reports.html" class="nav-item">Reports</a>
+        </nav>
+    </aside>
+    
+    <main class="main-content">
+        <div class="page-header">
+            <h1>Add Customer</h1>
+            <p class="page-subtitle">Add a new customer to your database</p>
+        </div>
+        
+        <div class="customer-form-container">
+            <form id="customerForm">
+                <div class="form-section">
+                    <h3>Basic Information</h3>
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label for="displayName">Display Name *</label>
+                            <input type="text" id="displayName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="companyName">Company Name</label>
+                            <input type="text" id="companyName">
+                        </div>
+                    </div>
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label for="email">Email *</label>
+                            <input type="email" id="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone</label>
+                            <input type="tel" id="phone">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Address</h3>
+                    <div class="form-group">
+                        <label for="street">Street Address</label>
+                        <input type="text" id="street">
+                    </div>
+                    <div class="form-row-4">
+                        <div class="form-group">
+                            <label for="city">City</label>
+                            <input type="text" id="city">
+                        </div>
+                        <div class="form-group">
+                            <label for="state">State</label>
+                            <input type="text" id="state">
+                        </div>
+                        <div class="form-group">
+                            <label for="zip">ZIP Code</label>
+                            <input type="text" id="zip">
+                        </div>
+                        <div class="form-group">
+                            <label for="country">Country</label>
+                            <input type="text" id="country" value="USA">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Business Details</h3>
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label for="taxId">Tax ID</label>
+                            <input type="text" id="taxId">
+                        </div>
+                        <div class="form-group">
+                            <label for="paymentTerms">Payment Terms</label>
+                            <select id="paymentTerms">
+                                <option value="Net 15">Net 15</option>
+                                <option value="Net 30" selected>Net 30</option>
+                                <option value="Net 60">Net 60</option>
+                                <option value="Due on Receipt">Due on Receipt</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">Notes</label>
+                        <textarea id="notes" rows="3"></textarea>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <a href="customers.html" class="btn-secondary">Cancel</a>
+                    <button type="submit" class="btn-primary" id="saveBtn">
+                        <span class="btn-text">Save Customer</span>
+                        <span class="btn-loader" style="display: none;"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/services/firestore-service.js"></script>
+    <script src="js/customers.js"></script>
+    <script>
+        if (window.location.pathname.includes('add-customer.html')) {
+            document.getElementById('customerForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('saveBtn');
+                const btnText = btn.querySelector('.btn-text');
+                const btnLoader = btn.querySelector('.btn-loader');
+                
+                btn.disabled = true;
+                btnText.style.display = 'none';
+                btnLoader.style.display = 'inline-block';
+                
+                try {
+                    const customer = {
+                        displayName: document.getElementById('displayName').value,
+                        companyName: document.getElementById('companyName').value,
+                        email: document.getElementById('email').value,
+                        phone: document.getElementById('phone').value,
+                        street: document.getElementById('street').value,
+                        city: document.getElementById('city').value,
+                        state: document.getElementById('state').value,
+                        zip: document.getElementById('zip').value,
+                        country: document.getElementById('country').value,
+                        taxId: document.getElementById('taxId').value,
+                        paymentTerms: document.getElementById('paymentTerms').value,
+                        notes: document.getElementById('notes').value,
+                        balanceOwed: 0
+                    };
+                    
+                    if (db && currentUser) {
+                        await saveCustomer(currentUser.uid, customer);
+                    }
+                    
+                    alert('Customer saved successfully!');
+                    window.location.href = 'customers.html';
+                } catch (error) {
+                    console.error('Error saving customer:', error);
+                    alert('Error saving customer. Please try again.');
+                } finally {
+                    btn.disabled = false;
+                    btnText.style.display = 'inline';
+                    btnLoader.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>
