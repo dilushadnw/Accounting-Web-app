@@ -103,7 +103,8 @@ function calculateTotals() {
 }
 
 function exportToPDF() {
-    alert('PDF export functionality requires jsPDF library. This is a placeholder for the export feature.');
+    console.warn('PDF export functionality requires jsPDF library.');
+    console.info('To enable PDF export, add jsPDF library: <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>');
     // In production, you would use jsPDF:
     // const doc = new jsPDF();
     // doc.text('Profit & Loss Report', 10, 10);

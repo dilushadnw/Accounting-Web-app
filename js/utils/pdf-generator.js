@@ -10,7 +10,8 @@
  * @param {string} filename - Name of the PDF file
  */
 function generatePDFFromElement(elementId, filename = 'report.pdf') {
-    alert('PDF export requires jsPDF library. Install with: npm install jspdf');
+    console.warn('PDF export requires jsPDF library. Install with: npm install jspdf');
+    console.info('For production use, uncomment the jsPDF implementation below');
     
     // Example implementation with jsPDF:
     /*
@@ -34,7 +35,7 @@ function generatePDFFromElement(elementId, filename = 'report.pdf') {
  */
 function generateSimplePDFReport(reportData, filename = 'report.pdf') {
     console.log('Generating PDF with data:', reportData);
-    alert('PDF generation is a placeholder. In production, use jsPDF library.');
+    console.warn('PDF generation is a placeholder. In production, use jsPDF library.');
     
     // Example implementation:
     /*
@@ -67,7 +68,7 @@ function generateSimplePDFReport(reportData, filename = 'report.pdf') {
  * @param {string} title - Title for the PDF
  */
 function exportTableToPDF(tableId, filename = 'table.pdf', title = 'Table Export') {
-    alert('Table PDF export is a placeholder. Install jsPDF and jsPDF-AutoTable for production use.');
+    console.warn('Table PDF export is a placeholder. Install jsPDF and jsPDF-AutoTable for production use.');
     
     // Example with jsPDF-AutoTable:
     /*
@@ -94,7 +95,8 @@ function exportTableToPDF(tableId, filename = 'table.pdf', title = 'Table Export
  * @param {object} invoice - Invoice data
  */
 function generateInvoicePDF(invoice) {
-    alert('Invoice PDF generation is a placeholder. Use jsPDF in production.');
+    console.warn('Invoice PDF generation is a placeholder. Use jsPDF in production.');
+    console.info('Invoice data:', invoice);
     
     // Example implementation:
     /*
