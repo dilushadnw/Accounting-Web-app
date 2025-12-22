@@ -3,13 +3,13 @@
 // Get these from Firebase Console -> Project Settings -> Your Apps
 
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyDFEG1tTPNSRUH4Z_wcF29FwJMV9SORGaI",
+  authDomain: "accounting-web-app-ff4bc.firebaseapp.com",
+  projectId: "accounting-web-app-ff4bc",
+  storageBucket: "accounting-web-app-ff4bc.appspot.com",
+  messagingSenderId: "810376456564",
+  appId: "1:810376456564:web:bb416cce7dfbbe818a2421",
+  databaseURL: "https://accounting-web-app-ff4bc-default-rtdb.firebaseio.com"
 };
 
 // Initialize Firebase
