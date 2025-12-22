@@ -25,7 +25,12 @@ function generatePDFFromElement(elementId, filename = 'report.pdf') {
         },
         x: 10,
         y: 10,
-        width: 190
+        width: 190,
+        windowWidth: 800,
+        html2canvas: {
+            scale: 2,
+            useCORS: true
+        }
     });
 }
 
@@ -73,13 +78,19 @@ function generateSimplePDFReport(reportData, filename = 'report.pdf') {
  * @param {string} title - Title for the PDF
  */
 function exportTableToPDF(tableId, filename = 'table.pdf', title = 'Table Export') {
-    if (typeof jspdf === 'undefined' || typeof jspdf.jsPDF.API.autoTable === 'undefined') {
-        console.warn('jsPDF and jsPDF-AutoTable libraries required. Include both libraries.');
+    if (typeof jspdf === 'undefined') {
+        console.warn('jsPDF library not loaded. Please include: <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>');
         return;
     }
     
     const { jsPDF } = jspdf;
     const doc = new jsPDF();
+    
+    // Check if autoTable plugin is available
+    if (typeof doc.autoTable === 'undefined') {
+        console.warn('jsPDF-AutoTable plugin not loaded. Please include: <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>');
+        return;
+    }
     
     doc.setFontSize(16);
     doc.text(title, 14, 15);
@@ -125,8 +136,22 @@ function generateInvoicePDF(invoice) {
     doc.text(`Date: ${invoice.date}`, 14, 42);
     doc.text(`Customer: ${invoice.customerName}`, 14, 49);
     
-    // Line items table (if autoTable is available)
-    if (typeof doc.autoTable === 'function' && invoice.lineItems) {
+    // Check if autoTable plugin is available
+    if (typeof doc.autoTable === 'undefined') {
+        console.warn('jsPDF-AutoTable plugin not loaded for invoice generation.');
+        // Fallback to simple PDF without table
+        doc.setFontSize(11);
+        doc.text(`Subtotal: ${formatCurrency(invoice.subtotal)}`, 14, 60);
+        doc.text(`Tax: ${formatCurrency(invoice.taxAmount)}`, 14, 68);
+        doc.setFont(undefined, 'bold');
+        doc.setFontSize(14);
+        doc.text(`Total: ${formatCurrency(invoice.total)}`, 14, 78);
+        doc.save(`invoice-${invoice.invoiceNumber}.pdf`);
+        return;
+    }
+    
+    // Line items table with autoTable
+    if (invoice.lineItems) {
         const lineItems = invoice.lineItems.map(item => [
             item.description,
             item.quantity,
